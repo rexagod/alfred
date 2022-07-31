@@ -5,7 +5,7 @@
 # -E: If any command in a pipeline errors, the entire pipeline exits with a non-zero status.
 # -u: Treat unset variables as an error when substituting.
 # -o pipefail: If any command in a pipeline fails, the entire pipeline fails.
-set -exEuo pipefail
+set -eEuo pipefail
 
 # TODO:
 # - Allow server-side configurations for debugger.
@@ -27,6 +27,13 @@ NC="$(tput sgr0)" # No Color.
 INFO="${BLUE}INFO${NC}"
 WARN="${YELLOW}WARN${NC}"
 ERR="${RED}ERROR${NC}"
+
+# Check if the script was invoked without arguments.
+if [ "$#" -eq 0 ]; then
+  echo "${ERR} no arguments provided"
+  echo "${INFO} usage: $0 -n|--namespace -p|--pod -c|--container -a|--target-port -b|--port -x|--proc [-B|--bypass-entrypoint-check]"
+  exit 1
+fi
 
 # Input parameters as long args.
 while [[ $# -gt 0 ]]; do
@@ -134,8 +141,13 @@ fi
 
 # Check if $GOBIN is in $PATH (i.e., is dlv globally available?).
 if ! echo "${PATH}" | grep -q "${GOBIN}"; then
-  echo "${ERR} GOBIN not in PATH."
-  exit 1
+  echo "${WARN} GOBIN not in PATH."
+  # Check if $GOPATH is in $PATH.
+  if ! echo "${PATH}" | grep -q "${GOPATH}"; then
+    echo "${ERR} GOPATH is not in PATH."
+    exit 1
+  fi
+  export GOBIN="${GOPATH}/bin"
 fi
 
 # Individual checks for granular errors.
@@ -214,8 +226,8 @@ DELVE_PID="$(kubectl exec -it "${POD}" -n "${NAMESPACE}" -c "${CONTAINER}" -- ps
 # shellcheck disable=SC2091
 $(${INJECTION}) && \
 trap "\
-  echo && \
-  kubectl exec -it ${POD} -n ${NAMESPACE} -c ${CONTAINER} -- rm ${DEBUGGER_REMOTE_PATH} && \
-  kill -9 ${INJECTION_PID} && \
+  echo -e \"\n${INFO} cleaning up\" && \
+  kubectl exec -it ${POD} -n ${NAMESPACE} -c ${CONTAINER} -- rm ${DEBUGGER_REMOTE_PATH} > /dev/null && \
+  kill -9 ${INJECTION_PID} > /dev/null && \
   kubectl exec -it ${POD} -n ${NAMESPACE} -c ${CONTAINER} -- kill -9 ${DELVE_PID} > /dev/null" \
   SIGINT SIGTERM EXIT
