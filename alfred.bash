@@ -125,6 +125,17 @@ if [ -z "${GOBIN}" ]; then
   exit 1
 fi
 
+# Check if $GOBIN is in $PATH (i.e., is dlv globally available?).
+if ! echo "${PATH}" | grep -q "${GOBIN}"; then
+  echo "${WARN} GOBIN not in PATH, falling back to GOPATH/bin"
+  # Check if $GOPATH is in $PATH.
+  if ! echo "${PATH}" | grep -q "${GOPATH}"; then
+    echo "${ERR} GOPATH is not in PATH."
+    exit 1
+  fi
+  export GOBIN="${GOPATH}/bin"
+fi
+
 # Check if dlv exists.
 if [ ! -f "${GOBIN}/dlv" ]; then
   echo "${WARN} dlv binary not found in GOBIN."
@@ -137,17 +148,6 @@ if [ ! -f "${GOBIN}/dlv" ]; then
     echo "${INFO} installing Delve"
     go get -u github.com/go-delve/delve/cmd/dlv
   fi
-fi
-
-# Check if $GOBIN is in $PATH (i.e., is dlv globally available?).
-if ! echo "${PATH}" | grep -q "${GOBIN}"; then
-  echo "${WARN} GOBIN not in PATH."
-  # Check if $GOPATH is in $PATH.
-  if ! echo "${PATH}" | grep -q "${GOPATH}"; then
-    echo "${ERR} GOPATH is not in PATH."
-    exit 1
-  fi
-  export GOBIN="${GOPATH}/bin"
 fi
 
 # Individual checks for granular errors.
