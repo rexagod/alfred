@@ -4,14 +4,20 @@ Alfred is a debugging utility created on top of the de-facto golang debugger, De
  * **inject** Delve into the target container that's running the target binary (that needs to be debugged),
  * **attach** in-cluster Delve to the target process,
  * **relay** debugging information to the user's local Delve instance (IDE or terminal),
+ * **debug** the target process,
+ * **rebuild** on any changes to the Dockerfile's parent directory, and
  * **clean up** all generated artefacts and orphan processes on interruption or exit.
 
 ### Prerequisites
 
-* [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* [`delve`](https://github.com/go-delve/delve/releases)
+* [`delve`](https://command-not-found.com/dlv)
+* [`kubectl`](https://command-not-found.com/kubectl)
 
-All prerequisites will be installed if they are not already present.
+All above prerequisites will be installed if they are not already present. In addition to these, the following are assumed to be installed on the user's machine,
+
+* [`awk`](https://command-not-found.com/awk)
+* [`jq`](https://command-not-found.com/jq)
+* [`md5sum`](https://command-not-found.com/md5sum)
 
 ### Usage
 
@@ -41,16 +47,28 @@ https://user-images.githubusercontent.com/33557095/182026204-50179f87-4ef5-4781-
 
 </details>
 
-### TODOs
+### Installation
+```shell
+# point a global binary to the alfred script, for inter-project convenience.
+ln -s ${PWD}/alfred.sh /usr/local/bin/alfred
+```
 
-* Allow `.alfredrc` configuration files so the user does not need to pass in the same arguments everytime, which they
+### Feature status
+
+* [Todo] Allow `.alfredrc` configuration files so the user does not need to pass in the same arguments everytime, which they
   can define in the project root (or `~/.config/`).
-* Watch the parent directory for changes, automate the creation of a corresponding debug image and it's injection into
+* [In progress] Watch the parent directory for changes, automate the creation of a corresponding debug image and it's injection into
   the CSV, so that the entire workflow can be truly automated.
 
 ### Trivia
 
-This project started out as a thread in [`r/kubernetes`](https://www.reddit.com/r/kubernetes/comments/w6tsmf/q_debugger_injection_possibilities/?utm_source=share&utm_medium=web2x&context=3) and the idea was pivoted twice (`Binary ConfigMaps` to `emptyDir`, and `emptyDir` to `kubectl cp`) since then. I plan on continuing to make this more efficient in terms of usability and performance, as I get more feedback over time.
+> What led to the incubation of this project?
+
+This project started out as a question (a thread) on [`r/kubernetes`](https://www.reddit.com/r/kubernetes/comments/w6tsmf/q_debugger_injection_possibilities/?utm_source=share&utm_medium=web2x&context=3) and the idea was pivoted twice (binary `ConfigMap`s to `emptyDir`, and `emptyDir` to finally, `kubectl *`) since then. I plan on continuing to make this more efficient in terms of usability and performance, as I get more feedback over time.
+
+> Why bash?
+
+Initially, this started out as a Golang project, [lazarus](https://github.com/rexagod/lazarus), but soon pivoted to a bash utility since there's a plethora of production-grade utilities already available in `kubectl` that are directly relevant to this project and which it can utilize in a flexible manner. If binary `ConfigMap`s or `emptyDir`s were at the core of this, the preference would have easily been Go.
 
 ### LICENSE
 
