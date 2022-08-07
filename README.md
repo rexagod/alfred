@@ -16,8 +16,10 @@ Alfred is a debugging utility created on top of the de-facto golang debugger, De
 All above prerequisites will be installed if they are not already present. In addition to these, the following are assumed to be installed on the user's machine,
 
 * [`awk`](https://command-not-found.com/awk)
+* [`curl`](https://command-not-found.com/curl)
 * [`jq`](https://command-not-found.com/jq)
 * [`md5sum`](https://command-not-found.com/md5sum)
+* [`stty`](https://command-not-found.com/stty)
 
 ### Usage
 
@@ -43,21 +45,33 @@ The repository used to test out the debugger, and to record the demonstration be
 <details>
 <summary>Screencast</summary>
 
+<details>
+<summary>initial-build (v0.0.1)</summary>
+
 https://user-images.githubusercontent.com/33557095/182026204-50179f87-4ef5-4781-a0ba-114060427bfd.mp4
+
+</details>
+<details>
+<summary>lazarus (v0.1.0)</summary>
+
+(todo)
+
+</details>
 
 </details>
 
 ### Installation
-```shell
+
+```bash
 # point a global binary to the alfred script, for inter-project convenience.
 ln -s ${PWD}/alfred.sh /usr/local/bin/alfred
 ```
 
 ### Feature status
 
-* [Todo] Allow `.alfredrc` configuration files so the user does not need to pass in the same arguments everytime, which they
+* [**Todo**] Allow `.alfredrc` configuration files so the user does not need to pass in the same arguments everytime, which they
   can define in the project root (or `~/.config/`).
-* [In progress] Watch the parent directory for changes, automate the creation of a corresponding debug image and it's injection into
+* [**Done**] Watch the parent directory for changes, automate the creation of a corresponding debug image and it's injection into
   the CSV, so that the entire workflow can be truly automated.
 
 ### Trivia
