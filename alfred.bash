@@ -38,8 +38,10 @@ function ___cleanup() {
 	DELVE_PID="$(kubectl exec -it "${POD}" -n "${NAMESPACE}" -c "${CONTAINER}" -- ps -fC "${DEBUGGER_BINARY}" | awk 'NR==2{print $2}')"
 	echo -e "${INFO} cleaning up"
 	kubectl exec -it "${POD}" -n "${NAMESPACE}" -c "${CONTAINER}" -- rm "${DEBUGGER_REMOTE_PATH}" >/dev/null
-	echo "${INFO} killing injection local process with pid: ${INJECTION_PID}"
-	kill -9 "${INJECTION_PID}" >/dev/null
+	ATTACH_PROC="$(ps -fC 'kubectl exec' | grep -w "${POD}" | awk 'NR==1{print $2}')"
+	if [ "${ATTACH_PROC}" != "" ]; then
+    kill -9 "${ATTACH_PROC}"
+  fi
 	kubectl exec -it "${POD}" -n "${NAMESPACE}" -c "${CONTAINER}" -- kill -9 "${DELVE_PID}" >/dev/null
 }
 

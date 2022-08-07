@@ -54,7 +54,7 @@ https://user-images.githubusercontent.com/33557095/182026204-50179f87-4ef5-4781-
 <details>
 <summary>lazarus (v0.1.0)</summary>
 
-(todo)
+https://user-images.githubusercontent.com/33557095/183291207-7303d282-656e-4311-96a4-ceab39ab3a71.mp4
 
 </details>
 
@@ -69,6 +69,7 @@ ln -s ${PWD}/alfred.sh /usr/local/bin/alfred
 
 ### Feature status
 
+* [**Todo**] Profile the script to detect potential performance bottlenecks.
 * [**Todo**] Allow `.alfredrc` configuration files so the user does not need to pass in the same arguments everytime, which they
   can define in the project root (or `~/.config/`).
 * [**Done**] Watch the parent directory for changes, automate the creation of a corresponding debug image and it's injection into
